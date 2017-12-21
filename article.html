@@ -1,0 +1,196 @@
+Today we'd like to show you how to create a little experimental glitch-like effect on an image. The effect will be powered by <a href="https://tympanus.net/codrops/css_reference/animation/">CSS animations</a> and the <a href="https://tympanus.net/codrops/css_reference/clip-path/">clip-path</a> property. The technique involves using several layers of images where each one will have a clip-path, a blend mode and a translation applied to it. It was inspired by the technique seen on the speakers page of the 404 conference.
+
+<div class="ct-featured-img-rss"><a href="http://tympanus.net/Tutorials/ImageGlitchEffect/">
+<img src="https://tympanus.net/codrops/wp-content/uploads/2017/12/ImageGlitchEffect_Featured.jpg" alt="ImageGlitchEffect_Featured" width="800" height="600" class="alignnone size-full wp-image-33500" /></a></div>
+
+<div class="box-attention">
+<strong>Please note this effect is very experimental; we use several properties that won't work in older browsers. The clip-path property is <a href="https://caniuse.com/#feat=css-clip-path">not supported in IE or Edge</a>.</strong> 
+</div>
+
+We also use <a href="https://tympanus.net/codrops/css_reference/custom-properties/">CSS variables</a> for setting some properties that will allow for an easy adjustment of the effect.
+
+<h2>Breaking down the effect</h2>
+When searching the web for an easy to use and light-weight glitch implementation, we came across <a href="https://www.reddit.com/r/webdev/comments/71xhrs/how_is_this_glitch_effect_created_when_image_is/?st=j919fsoe&sh=436d2de3">this question on Reddit</a>. Somebody was asking how the glitch effect was pulled off on the <a href="https://www.404.ie/speakers/">speaker line up page</a> of the 404 conference. The glitch effect was made using CSS animations on a stack of three images that are the same. The animations consist of a rapidly changing <a href="https://tympanus.net/codrops/css_reference/clip/">clip property</a> on all layers except the first one. Additionally, the layers are being moved slightly. So what we are seeing, is slices of the image, slightly offset and in constant movement.
+
+We wanted to experiment with this and recreate the effect using the <a href="https://tympanus.net/codrops/css_reference/clip-path/">clip-path</a> property instead. Although it has less browser support (it doesn't work in IE or Edge), it allows for a more flexible usage since we can use percentage values and apply it to elements that are not necessarily positioned absolutely. 
+
+Combining the effect with <a href="https://tympanus.net/codrops/css_reference/background-blend-mode/">background blend modes</a>, allows us to create some interesting looking image effects. 
+
+The way this works is to create an image stack where each overlaying image will animate its clip-path in, what looks like, random sizes. We'll use a stack of 5 images: 
+
+<pre class="brush:css"><code>&lt;div class="glitch glitch--style-1"&gt;
+	&lt;div class="glitch__img"&gt;&lt;/div&gt;
+	&lt;div class="glitch__img"&gt;&lt;/div&gt;
+	&lt;div class="glitch__img"&gt;&lt;/div&gt;
+	&lt;div class="glitch__img"&gt;&lt;/div&gt;
+	&lt;div class="glitch__img"&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+Let's have a look at the main styles for the hover effect that you can see in the last demo. Note that we've defined some variables previously, but they should be self-explanatory:
+
+<pre class="brush:css"><code>.glitch {
+	position: relative;
+	width: var(--glitch-width);
+	max-width: 400px;
+	height: var(--glitch-height);
+	max-height: calc(400px * 1.25);
+	overflow: hidden;
+	margin: 0 auto;
+}
+
+.glitch:hover {
+	cursor: pointer;
+}
+
+.glitch__img {
+	position: absolute;
+	top: calc(-1 * var(--gap-vertical));
+	left: calc(-1 * var(--gap-horizontal));
+	width: calc(100% + var(--gap-horizontal) * 2);
+	height: calc(100% + var(--gap-vertical) * 2);
+	background: url(../img/1.jpg) no-repeat 50% 0;
+	background-color: var(--blend-color-1);
+	background-size: cover;
+	background-blend-mode: var(--blend-mode-1);
+}</code></pre>
+
+We don't want to show the sides being cut off, so we make sure that the image dimensions take the gap, i.e. the movement into consideration. 
+
+[adrotate group="2"]
+
+Then, we set the background colors and blend modes for each layer:
+
+<pre class="brush:css"><code>/* Set the background colors for the glitch images*/
+.glitch__img:nth-child(2) {
+	background-color: var(--blend-color-2);
+	background-blend-mode: var(--blend-mode-2);
+}
+
+.glitch__img:nth-child(3) {
+	background-color: var(--blend-color-3);
+	background-blend-mode: var(--blend-mode-3);
+}
+
+.glitch__img:nth-child(4) {
+	background-color: var(--blend-color-4);
+	background-blend-mode: var(--blend-mode-4);
+}
+
+.glitch__img:nth-child(5) {
+	background-color: var(--blend-color-5);
+	background-blend-mode: var(--blend-mode-5);
+}</code></pre>
+
+As this is going to be a hover effect, we want all layers except the first one to be hidden by default:
+<pre class="brush:css"><code>
+.glitch__img:nth-child(n+2) {
+	opacity: 0;
+}</code></pre>
+
+Then, on hover, we show all layers:
+<pre class="brush:css"><code>
+.glitch:hover .glitch__img:nth-child(n+2) {
+	opacity: 1;
+}</code></pre>
+
+And we also apply the animations and a transform to each layer:
+<pre class="brush:css"><code>
+.glitch:hover .glitch__img:nth-child(2) {
+	transform: translate3d(var(--gap-horizontal),0,0);
+	animation: glitch-anim-1-horizontal var(--time-anim) infinite linear alternate;
+}
+
+.glitch:hover > .glitch__img:nth-child(3) {
+	transform: translate3d(calc(-1 * var(--gap-horizontal)),0,0);
+	animation: glitch-anim-2-horizontal var(--time-anim) infinite linear alternate;
+}
+
+.glitch:hover > .glitch__img:nth-child(4) {
+	transform: translate3d(0, calc(-1 * var(--gap-vertical)), 0) scale3d(-1,-1,1);
+	animation: glitch-anim-3-horizontal var(--time-anim) infinite linear alternate;
+}
+
+/* Hover flash animation on last image */
+.glitch:hover > .glitch__img:nth-child(5) {
+	animation: glitch-anim-flash 0.5s steps(1,end) infinite;
+}</code></pre>
+
+The <code>calc(-1 * var(--gap-horizontal))</code> basically allows us to set a negative value of a given variable.
+
+Have a look at this slow motion visualization to see what's going on under the hood (this GIF is quite big, so it might take a while to load):
+
+The last layer is only flashing and moving slightly while the others also get cut by a clip-path.
+
+Let's have a look at one of the animations for setting the clip-path: 
+<pre class="brush:css"><code>@keyframes glitch-anim-1-horizontal {
+	0% { 
+		-webkit-clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+		clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+	}
+	10% {
+		-webkit-clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+		clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+	}
+	20% {
+		-webkit-clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+		clip-path: polygon(0 10%, 100% 10%, 100% 20%, 0 20%);
+	}
+	30% {
+		-webkit-clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+		clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+	}
+	40% {
+		-webkit-clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+		clip-path: polygon(0 33%, 100% 33%, 100% 33%, 0 33%);
+	}
+	50% {
+		-webkit-clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+		clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+	}
+	60% {
+		-webkit-clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+		clip-path: polygon(0 50%, 100% 50%, 100% 20%, 0 20%);
+	}
+	70% {
+		-webkit-clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+		clip-path: polygon(0 70%, 100% 70%, 100% 70%, 0 70%);
+	}
+	80% {
+		-webkit-clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+		clip-path: polygon(0 80%, 100% 80%, 100% 80%, 0 80%);
+	}
+	90% {
+		-webkit-clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+		clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+	}
+	100% {
+		-webkit-clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+		clip-path: polygon(0 70%, 100% 70%, 100% 80%, 0 80%);
+	}
+}</code></pre>
+
+The slices will go from tiny, to a bit larger and also nothing, leaving a "pause" on some of the frames and then starting again from another position.
+
+A great tool to visualize clip paths is <a href="https://bennettfeely.com/clippy/">Clippy</a> by Bennett Feely.
+
+The final animation is a simple flash of the last layer:
+<pre class="brush:css"><code>@keyframes glitch-anim-flash {
+	0% { 
+		opacity: 0.2; 
+		transform: translate3d(var(--gap-horizontal), var(--gap-vertical), 0);
+	}
+	33%, 100% { 
+		opacity: 0;
+		transform: translate3d(0,0,0);
+	}
+}</code></pre>
+
+This looks especially interesting when applying an overlay blend mode with a fitting color.
+
+<strong>And that's it! We hope you've found some inspiration in this little experiment.</strong>
+
+<h2>References and Credits</h2>
+<ul>
+  <li>Images by <a href="http://unsplash.com">Unsplash.com</a></li>
+<li><a href="http://imagesloaded.desandro.com/">imagesLoaded</a> by Dave DeSandro</li>
+</ul>
