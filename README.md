@@ -1,4 +1,4 @@
-# Image Glitch Effect
+# CSS Glitch Effect
 
 A glitch effect using CSS animations and clip-path. Inspired by the technique seen on the [speakers page](https://www.404.ie/speakers/) of the 404 conference.
 
