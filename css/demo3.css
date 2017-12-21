@@ -7,6 +7,7 @@
 	--glitch-width: 40vmax;
 	--glitch-height: calc(40vmax * 1.25);
 	--color-title: #fff;
+	--color-subtitle: #30efbf;
 }
 
 .glitch--style-1 {
@@ -149,6 +150,7 @@
 	font-size: 50%;
 	font-weight: 500;
 	opacity: 0;
+	color: var(--color-subtitle);
 }
 
 .glitch:hover + .grid__item-title span {
