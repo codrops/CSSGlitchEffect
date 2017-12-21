@@ -70,25 +70,25 @@
 	animation-iteration-count: infinite;
 }
 
-.glitch__img:nth-child(2) {
+.imgloaded .glitch__img:nth-child(2) {
 	background-color: var(--blend-color-2);
 	background-blend-mode: var(--blend-mode-2);
 	animation-name: glitch-anim-1;
 }
 
-.glitch__img:nth-child(3) {
+.imgloaded .glitch__img:nth-child(3) {
 	background-color: var(--blend-color-3);
 	background-blend-mode: var(--blend-mode-3);
 	animation-name: glitch-anim-2;
 }
 
-.glitch__img:nth-child(4) {
+.imgloaded .glitch__img:nth-child(4) {
 	background-color: var(--blend-color-4);
 	background-blend-mode: var(--blend-mode-4);
 	animation-name: glitch-anim-3;
 }
 
-.glitch__img:nth-child(5) {
+.imgloaded .glitch__img:nth-child(5) {
 	background-color: var(--blend-color-5);
 	background-blend-mode: var(--blend-mode-5);
 	animation-name: glitch-anim-flash;
