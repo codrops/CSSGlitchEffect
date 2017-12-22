@@ -6,7 +6,7 @@ A glitch effect using CSS animations and clip-path. Inspired by the technique se
 
 [Article on Codrops](https://tympanus.net/codrops/?p=33498)
 
-[Demo](http://tympanus.net/Tutorials/ImageGlitchEffect/)
+[Demo](https://tympanus.net/Tutorials/CSSGlitchEffect/)
 
 ## Credits
 
